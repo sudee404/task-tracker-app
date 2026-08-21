@@ -7,14 +7,19 @@
  */
 
 export class ApiError extends Error {
+  readonly status: number;
+  /** Field name -> messages, as returned by DRF serializers. */
+  readonly fieldErrors: Record<string, string[]>;
+
   constructor(
-    public status: number,
-    /** Field name -> messages, as returned by DRF serializers. */
-    public fieldErrors: Record<string, string[]> = {},
+    status: number,
+    fieldErrors: Record<string, string[]> = {},
     message = "Request failed",
   ) {
     super(message);
     this.name = "ApiError";
+    this.status = status;
+    this.fieldErrors = fieldErrors;
   }
 
   /** The first message worth showing at the top of a form. */

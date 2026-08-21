@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 
 import { ApiError } from "../api/client";
-import { useAuth } from "../auth/AuthContext";
+import { useAuth } from "../auth/context";
 
 const FIELD =
   "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none";
