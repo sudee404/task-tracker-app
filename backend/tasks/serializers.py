@@ -26,6 +26,10 @@ class TaskSerializer(serializers.ModelSerializer):
     # Nested copy so the list view can render the assignee without a second request.
     assignee_detail = UserSerializer(source="assignee", read_only=True)
     created_by_detail = UserSerializer(source="created_by", read_only=True)
+    # Mirrors TaskPermission so the UI can hide controls it may not use. The
+    # API still enforces the rule itself — this is a hint, not the gate.
+    can_edit = serializers.SerializerMethodField()
+    can_delete = serializers.SerializerMethodField()
 
     class Meta:
         model = Task
@@ -39,10 +43,22 @@ class TaskSerializer(serializers.ModelSerializer):
             "assignee",
             "assignee_detail",
             "created_by_detail",
+            "can_edit",
+            "can_delete",
             "created_at",
             "updated_at",
         ]
         read_only_fields = ["created_at", "updated_at"]
+
+    def _current_user_id(self):
+        request = self.context.get("request")
+        return getattr(getattr(request, "user", None), "id", None)
+
+    def get_can_edit(self, obj) -> bool:
+        return self._current_user_id() in {obj.created_by_id, obj.assignee_id}
+
+    def get_can_delete(self, obj) -> bool:
+        return self._current_user_id() == obj.created_by_id
 
     def validate_title(self, value: str) -> str:
         value = value.strip()

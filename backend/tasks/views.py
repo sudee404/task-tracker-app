@@ -3,6 +3,7 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 
 from .filters import TaskFilter
+from .permissions import TaskPermission
 from .models import Task
 from .serializers import TaskSerializer, UserSerializer
 
@@ -17,7 +18,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     """
 
     serializer_class = TaskSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [TaskPermission]
     filterset_class = TaskFilter
     search_fields = ["title", "description"]
     ordering_fields = ["created_at", "due_date", "priority", "title"]
