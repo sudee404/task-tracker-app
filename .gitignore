@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Django
+db.sqlite3
+/backend/staticfiles/
+/backend/media/
+
+# Node
+node_modules/
+dist/
+.vite/
+coverage/
+
+# Env
+.env
+.env.local
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/
+
+# Local agent tooling — not part of the project
+CLAUDE.md
+.claude/
