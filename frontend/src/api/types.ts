@@ -16,6 +16,9 @@ export interface Task {
   assignee: number | null;
   assignee_detail: User | null;
   created_by_detail: User | null;
+  /** Mirrors the server's permission rule; the API still enforces it. */
+  can_edit: boolean;
+  can_delete: boolean;
   created_at: string;
   updated_at: string;
 }

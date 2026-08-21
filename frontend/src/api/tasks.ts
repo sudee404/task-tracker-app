@@ -1,7 +1,7 @@
 import { request } from "./client";
 import type { Paginated, Task, TaskFilters, TaskInput, User } from "./types";
 
-function toQueryString(filters: TaskFilters): string {
+function toQueryString(filters: TaskFilters & { page?: string }): string {
   const params = new URLSearchParams();
   for (const [key, value] of Object.entries(filters)) {
     if (value) params.set(key, value);
@@ -11,7 +11,7 @@ function toQueryString(filters: TaskFilters): string {
 }
 
 export const tasksApi = {
-  list: (filters: TaskFilters = {}) =>
+  list: (filters: TaskFilters & { page?: string } = {}) =>
     request<Paginated<Task>>(`/tasks/${toQueryString(filters)}`),
   create: (input: TaskInput) => request<Task>("/tasks/", { method: "POST", body: input }),
   update: (id: number, input: Partial<TaskInput>) =>

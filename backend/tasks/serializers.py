@@ -20,6 +20,12 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class TaskSerializer(serializers.ModelSerializer):
+    # DRF trims whitespace and rejects blanks itself; this only supplies
+    # wording a person would recognise in place of "This field may not be blank."
+    title = serializers.CharField(
+        max_length=200,
+        error_messages={"blank": "Title cannot be blank.", "required": "Title is required."},
+    )
     assignee = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(), allow_null=True, required=False
     )
@@ -60,8 +66,3 @@ class TaskSerializer(serializers.ModelSerializer):
     def get_can_delete(self, obj) -> bool:
         return self._current_user_id() == obj.created_by_id
 
-    def validate_title(self, value: str) -> str:
-        value = value.strip()
-        if not value:
-            raise serializers.ValidationError("Title cannot be blank.")
-        return value

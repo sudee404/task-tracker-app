@@ -1,18 +1,18 @@
 import type { Priority } from "../api/types";
 
-const STYLES: Record<Priority, string> = {
-  HIGH: "bg-rose-100 text-rose-700 ring-rose-200",
-  MEDIUM: "bg-amber-100 text-amber-700 ring-amber-200",
-  LOW: "bg-slate-100 text-slate-600 ring-slate-200",
+const DOT: Record<Priority, string> = {
+  HIGH: "bg-high",
+  MEDIUM: "bg-medium",
+  LOW: "bg-low",
 };
 
 const LABELS: Record<Priority, string> = { HIGH: "High", MEDIUM: "Medium", LOW: "Low" };
 
+/** A dot plus a word — quieter than a filled pill, still scannable in a column. */
 export function PriorityBadge({ priority }: { priority: Priority }) {
   return (
-    <span
-      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset ${STYLES[priority]}`}
-    >
+    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-soft">
+      <span aria-hidden className={`size-1.5 rounded-full ${DOT[priority]}`} />
       {LABELS[priority]}
     </span>
   );

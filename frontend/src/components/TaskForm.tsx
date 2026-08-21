@@ -12,7 +12,7 @@ interface Props {
 }
 
 const FIELD =
-  "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none";
+  "w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink transition placeholder:text-ink-faint hover:border-accent/40";
 
 export function TaskForm({ team, task, onSubmit, onCancel }: Props) {
   const [title, setTitle] = useState(task?.title ?? "");
@@ -47,7 +47,7 @@ export function TaskForm({ team, task, onSubmit, onCancel }: Props) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4" noValidate>
       <div>
-        <label htmlFor="title" className="mb-1 block text-sm font-medium text-slate-700">
+        <label htmlFor="title" className="mb-1.5 block text-xs font-medium text-ink-soft">
           Title
         </label>
         <input
@@ -57,11 +57,11 @@ export function TaskForm({ team, task, onSubmit, onCancel }: Props) {
           className={FIELD}
           autoFocus
         />
-        {errors.title && <p className="mt-1 text-sm text-rose-600">{errors.title[0]}</p>}
+        {errors.title && <p className="mt-1.5 text-xs text-danger">{errors.title[0]}</p>}
       </div>
 
       <div>
-        <label htmlFor="description" className="mb-1 block text-sm font-medium text-slate-700">
+        <label htmlFor="description" className="mb-1.5 block text-xs font-medium text-ink-soft">
           Description
         </label>
         <textarea
@@ -75,7 +75,7 @@ export function TaskForm({ team, task, onSubmit, onCancel }: Props) {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div>
-          <label htmlFor="assignee" className="mb-1 block text-sm font-medium text-slate-700">
+          <label htmlFor="assignee" className="mb-1.5 block text-xs font-medium text-ink-soft">
             Assignee
           </label>
           <select
@@ -94,7 +94,7 @@ export function TaskForm({ team, task, onSubmit, onCancel }: Props) {
         </div>
 
         <div>
-          <label htmlFor="priority" className="mb-1 block text-sm font-medium text-slate-700">
+          <label htmlFor="priority" className="mb-1.5 block text-xs font-medium text-ink-soft">
             Priority
           </label>
           <select
@@ -110,7 +110,7 @@ export function TaskForm({ team, task, onSubmit, onCancel }: Props) {
         </div>
 
         <div>
-          <label htmlFor="due_date" className="mb-1 block text-sm font-medium text-slate-700">
+          <label htmlFor="due_date" className="mb-1.5 block text-xs font-medium text-ink-soft">
             Due date
           </label>
           <input
@@ -123,20 +123,20 @@ export function TaskForm({ team, task, onSubmit, onCancel }: Props) {
         </div>
       </div>
 
-      {errors.detail && <p className="text-sm text-rose-600">{errors.detail[0]}</p>}
+      {errors.detail && <p className="text-xs text-danger">{errors.detail[0]}</p>}
 
       <div className="flex justify-end gap-2 pt-2">
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-md px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
+          className="rounded-lg px-4 py-2 text-sm font-medium text-ink-soft transition hover:bg-surface-muted hover:text-ink"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={saving}
-          className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-50"
+          className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-on-accent transition hover:bg-accent-hover disabled:opacity-50"
         >
           {saving ? "Saving…" : task ? "Save changes" : "Add task"}
         </button>

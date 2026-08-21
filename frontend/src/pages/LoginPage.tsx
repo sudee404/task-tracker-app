@@ -4,7 +4,7 @@ import { ApiError } from "../api/client";
 import { useAuth } from "../auth/context";
 
 const FIELD =
-  "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none";
+  "w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink transition hover:border-accent/40";
 
 export function LoginPage() {
   const { login } = useAuth();
@@ -29,12 +29,17 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-100 p-4">
-      <form onSubmit={handleSubmit} className="w-full max-w-sm rounded-xl bg-white p-8 shadow-sm">
-        <h1 className="text-xl font-semibold text-slate-900">Task Tracker</h1>
-        <p className="mt-1 mb-6 text-sm text-slate-500">Sign in to your team workspace.</p>
+    <div className="flex min-h-screen items-center justify-center bg-canvas p-4">
+      <form onSubmit={handleSubmit} className="w-full max-w-sm rounded-2xl border border-line bg-surface p-8 shadow-sm">
+        <div className="mb-5 flex items-center gap-2.5">
+          <span aria-hidden className="grid size-8 place-items-center rounded-lg bg-accent text-sm font-bold text-on-accent">
+            ✓
+          </span>
+          <h1 className="text-lg font-semibold text-ink">Task Tracker</h1>
+        </div>
+        <p className="mb-6 text-sm text-ink-soft">Sign in to your team workspace.</p>
 
-        <label htmlFor="username" className="mb-1 block text-sm font-medium text-slate-700">
+        <label htmlFor="username" className="mb-1.5 block text-xs font-medium text-ink-soft">
           Username
         </label>
         <input
@@ -45,7 +50,7 @@ export function LoginPage() {
           autoFocus
         />
 
-        <label htmlFor="password" className="mb-1 block text-sm font-medium text-slate-700">
+        <label htmlFor="password" className="mb-1.5 block text-xs font-medium text-ink-soft">
           Password
         </label>
         <input
@@ -56,18 +61,18 @@ export function LoginPage() {
           className={FIELD}
         />
 
-        {error && <p className="mt-3 text-sm text-rose-600">{error}</p>}
+        {error && <p className="mt-3 text-xs text-danger">{error}</p>}
 
         <button
           type="submit"
           disabled={busy}
-          className="mt-6 w-full rounded-md bg-slate-900 py-2 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-50"
+          className="mt-6 w-full rounded-lg bg-accent py-2.5 text-sm font-medium text-on-accent transition hover:bg-accent-hover disabled:opacity-50"
         >
           {busy ? "Signing in…" : "Sign in"}
         </button>
 
-        <p className="mt-6 text-center text-xs text-slate-400">
-          Demo accounts: amara, ben, priya, sofia — password <code>password123</code>
+        <p className="mt-6 text-center text-xs text-ink-faint">
+          Demo accounts: amara, ben, priya, sofia — password <code className="rounded bg-surface-muted px-1 py-0.5 text-ink-soft">password123</code>
         </p>
       </form>
     </div>

@@ -7,7 +7,7 @@ export function App() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-100 text-sm text-slate-500">
+      <div className="flex min-h-screen items-center justify-center bg-canvas text-sm text-ink-soft">
         Loading…
       </div>
     );

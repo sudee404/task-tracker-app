@@ -21,10 +21,22 @@ def test_create_task_records_creator(client_auth, amara):
     assert task.priority == Priority.MEDIUM
 
 
-def test_title_is_required_and_cannot_be_blank(client_auth):
-    response = client_auth.post("/api/tasks/", {"title": "   "})
+@pytest.mark.parametrize("payload", [{"title": "   "}, {"title": ""}, {}])
+def test_title_must_be_present_and_not_blank(client_auth, payload):
+    response = client_auth.post("/api/tasks/", payload)
     assert response.status_code == 400
     assert "title" in response.data
+
+
+def test_blank_title_error_is_worded_for_a_person(client_auth):
+    response = client_auth.post("/api/tasks/", {"title": "   "})
+    assert str(response.data["title"][0]) == "Title cannot be blank."
+
+
+def test_surrounding_whitespace_is_trimmed(client_auth):
+    response = client_auth.post("/api/tasks/", {"title": "  Padded title  "})
+    assert response.status_code == 201
+    assert response.data["title"] == "Padded title"
 
 
 def test_edit_task(client_auth, task):

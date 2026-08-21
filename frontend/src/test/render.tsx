@@ -3,6 +3,8 @@ import { render } from "@testing-library/react";
 import type { ReactElement } from "react";
 
 import { AuthProvider } from "../auth/AuthContext";
+import { ThemeProvider } from "../theme/ThemeProvider";
+import { ToastProvider } from "../toast/ToastProvider";
 
 /** Renders a component inside the providers the real app supplies. */
 export function renderWithProviders(ui: ReactElement) {
@@ -11,8 +13,12 @@ export function renderWithProviders(ui: ReactElement) {
   });
 
   return render(
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>{ui}</AuthProvider>
-    </QueryClientProvider>,
+    <ThemeProvider>
+      <ToastProvider>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>{ui}</AuthProvider>
+        </QueryClientProvider>
+      </ToastProvider>
+    </ThemeProvider>,
   );
 }

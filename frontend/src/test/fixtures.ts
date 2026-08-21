@@ -14,6 +14,8 @@ export function makeTask(overrides: Partial<Task> = {}): Task {
     assignee: null,
     assignee_detail: null,
     created_by_detail: amara,
+    can_edit: true,
+    can_delete: true,
     created_at: "2026-08-01T09:00:00Z",
     updated_at: "2026-08-01T09:00:00Z",
     ...overrides,

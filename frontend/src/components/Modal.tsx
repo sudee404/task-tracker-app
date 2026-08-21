@@ -15,7 +15,7 @@ export function Modal({ title, onClose, children }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-10 flex items-start justify-center bg-slate-900/40 p-4 pt-20"
+      className="fixed inset-0 z-20 flex items-start justify-center bg-black/40 p-4 pt-20 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
@@ -23,9 +23,9 @@ export function Modal({ title, onClose, children }: Props) {
         aria-modal="true"
         aria-label={title}
         onClick={(event) => event.stopPropagation()}
-        className="w-full max-w-xl rounded-xl bg-white p-6 shadow-xl"
+        className="w-full max-w-xl rounded-2xl border border-line bg-surface p-6 shadow-2xl"
       >
-        <h2 className="mb-4 text-lg font-semibold text-slate-900">{title}</h2>
+        <h2 className="mb-5 text-base font-semibold text-ink">{title}</h2>
         {children}
       </div>
     </div>
