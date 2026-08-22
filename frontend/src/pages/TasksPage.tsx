@@ -5,10 +5,11 @@ import {
   useDeleteTask,
   useTasks,
   useTeam,
+  useReassignTask,
   useToggleComplete,
   useUpdateTask,
 } from "../api/hooks";
-import type { Task, TaskFilters, TaskInput } from "../api/types";
+import type { Task, TaskFilters, TaskInput, User } from "../api/types";
 import { useAuth } from "../auth/context";
 import { Avatar } from "../components/Avatar";
 import { BoardColumn } from "../components/BoardColumn";
@@ -44,6 +45,7 @@ export function TasksPage() {
   const createTask = useCreateTask();
   const updateTask = useUpdateTask();
   const toggleComplete = useToggleComplete();
+  const reassignTask = useReassignTask();
   const deleteTask = useDeleteTask();
 
   const todoTasks = todo.data?.results ?? [];
@@ -65,6 +67,9 @@ export function TasksPage() {
     onDelete: (task: Task) => deleteTask.mutate(task.id),
     onDragStart: (task: Task) => setDragging(task),
     onDragEnd: () => setDragging(null),
+    onAssign: (task: Task, member: User | null) =>
+      reassignTask.mutate({ id: task.id, assignee: member?.id ?? null, assigneeDetail: member }),
+    team,
   };
 
   /** Dropping a card in a column is just a completion change. */

@@ -7,7 +7,7 @@ import {
 
 import { ApiError } from "./client";
 import { tasksApi, usersApi } from "./tasks";
-import type { Paginated, Task, TaskFilters, TaskInput } from "./types";
+import type { Paginated, Task, TaskFilters, TaskInput, User } from "./types";
 import { useToast } from "../toast/context";
 
 const TASKS_KEY = "tasks";
@@ -84,20 +84,24 @@ export const useDeleteTask = () =>
   useTaskMutation((id: number) => tasksApi.remove(id), "Could not delete the task.");
 
 /**
- * Completion flips immediately and rolls back if the server refuses.
+ * A mutation that shows its result before the server confirms it, and puts the
+ * cache back if the server refuses.
  *
  * Every cached page is patched, because the same task can sit in more than one
- * cached query (the two board columns are separate queries).
+ * cached query — the two board columns are separate queries.
  */
-export function useToggleComplete() {
+function useOptimisticTaskMutation<TArgs extends { id: number }>(
+  fn: (args: TArgs) => Promise<unknown>,
+  patch: (task: Task, args: TArgs) => Task,
+  failureMessage: string,
+) {
   const queryClient = useQueryClient();
   const { notify } = useToast();
 
   return useMutation({
-    mutationFn: ({ id, isComplete }: { id: number; isComplete: boolean }) =>
-      tasksApi.setComplete(id, isComplete),
+    mutationFn: fn,
 
-    onMutate: async ({ id, isComplete }) => {
+    onMutate: async (args: TArgs) => {
       await queryClient.cancelQueries({ queryKey: [TASKS_KEY] });
       const snapshot = queryClient.getQueriesData<Paginated<Task>>({ queryKey: [TASKS_KEY] });
 
@@ -105,21 +109,44 @@ export function useToggleComplete() {
         if (!page) continue;
         queryClient.setQueryData<Paginated<Task>>(key, {
           ...page,
-          results: page.results.map((task) =>
-            task.id === id ? { ...task, is_complete: isComplete } : task,
-          ),
+          results: page.results.map((task) => (task.id === args.id ? patch(task, args) : task)),
         });
       }
       return { snapshot };
     },
 
-    onError: (error, _variables, context) => {
+    onError: (error, _args, context) => {
       for (const [key, page] of context?.snapshot ?? []) {
         queryClient.setQueryData(key, page);
       }
-      notify(messageFor(error, "Could not update the task."));
+      notify(messageFor(error, failureMessage));
     },
 
     onSettled: () => queryClient.invalidateQueries({ queryKey: [TASKS_KEY] }),
   });
 }
+
+export const useToggleComplete = () =>
+  useOptimisticTaskMutation(
+    ({ id, isComplete }: { id: number; isComplete: boolean }) =>
+      tasksApi.setComplete(id, isComplete),
+    (task, { isComplete }) => ({ ...task, is_complete: isComplete }),
+    "Could not update the task.",
+  );
+
+/**
+ * Reassigning from the card. `assigneeDetail` is threaded through so the
+ * optimistic patch can show the new person's initials immediately rather than
+ * blanking the avatar until the refetch lands.
+ */
+export const useReassignTask = () =>
+  useOptimisticTaskMutation(
+    ({ id, assignee }: { id: number; assignee: number | null; assigneeDetail: User | null }) =>
+      tasksApi.update(id, { assignee }),
+    (task, { assignee, assigneeDetail }) => ({
+      ...task,
+      assignee,
+      assignee_detail: assigneeDetail,
+    }),
+    "Could not reassign the task.",
+  );

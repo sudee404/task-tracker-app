@@ -38,7 +38,7 @@ development machine.
 
 ```bash
 cd backend  && .venv/bin/python -m pytest   # 38 tests
-cd frontend && npm test                     # 31 tests
+cd frontend && npm test                     # 43 tests
 ```
 
 The backend suite runs against in-memory SQLite, so it needs no container.
@@ -71,6 +71,11 @@ error payloads into field-level messages. React Query owns server state, so
 every mutation invalidates the task list and the view refetches itself instead
 of hand-rolled cache updates. `AuthProvider` asks `/api/auth/me/` once on boot
 to decide between the login screen and the app.
+
+**Reassignment.** The avatar on a card already answers "who owns this", so
+clicking it opens the team list and changes the answer — no modal, one click
+each way. It patches only `assignee`, and like completion it is optimistic. The
+avatar is a plain label rather than a button when you lack edit rights.
 
 **The board.** To do and Done are two independent queries (`?status=incomplete`
 and `?status=complete`), each with its own count and its own "Load more". A

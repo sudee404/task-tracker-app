@@ -1,5 +1,5 @@
-import type { Task } from "../api/types";
-import { Avatar } from "./Avatar";
+import type { Task, User } from "../api/types";
+import { AssigneePicker } from "./AssigneePicker";
 import { DueDate } from "./DueDate";
 import { PriorityBadge } from "./PriorityBadge";
 
@@ -10,6 +10,8 @@ interface Props {
   onDelete: (task: Task) => void;
   onDragStart: (task: Task) => void;
   onDragEnd: () => void;
+  onAssign: (task: Task, member: User | null) => void;
+  team: User[];
   isDragging: boolean;
 }
 
@@ -20,6 +22,8 @@ export function TaskCard({
   onDelete,
   onDragStart,
   onDragEnd,
+  onAssign,
+  team,
   isDragging,
 }: Props) {
   return (
@@ -66,7 +70,11 @@ export function TaskCard({
           </div>
         </div>
 
-        <Avatar user={task.assignee_detail} />
+        <AssigneePicker
+          task={task}
+          team={team}
+          onAssign={(member) => onAssign(task, member)}
+        />
       </div>
 
       {/* Collapsed to zero height until hover, so a resting card has no dead space. */}

@@ -122,6 +122,65 @@ describe("TasksPage completion", () => {
   });
 });
 
+describe("TasksPage reassignment", () => {
+  it("reassigns from the card without opening the editor", async () => {
+    show(makeTask({ id: 3, title: "Record the Loom" }));
+    const patched = vi.fn();
+    server.use(
+      http.patch("/api/tasks/3/", async ({ request }) => {
+        patched(await request.json());
+        return HttpResponse.json(makeTask({ id: 3, assignee: 2, assignee_detail: ben }));
+      }),
+    );
+    renderWithProviders(<TasksPage />);
+
+    await userEvent.click(await screen.findByRole("button", { name: /Assign someone/ }));
+    await userEvent.click(screen.getByRole("menuitem", { name: /Ben Whitfield/ }));
+
+    await waitFor(() => expect(patched).toHaveBeenCalledWith({ assignee: 2 }));
+    // No modal was involved.
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("shows the new assignee before the server confirms", async () => {
+    show(makeTask({ id: 3, title: "Record the Loom" }));
+    let release: (value: unknown) => void = () => {};
+    server.use(
+      http.patch("/api/tasks/3/", async () => {
+        await new Promise((r) => (release = r));
+        return HttpResponse.json(makeTask({ id: 3, assignee: 2, assignee_detail: ben }));
+      }),
+    );
+    renderWithProviders(<TasksPage />);
+
+    await userEvent.click(await screen.findByRole("button", { name: /Assign someone/ }));
+    await userEvent.click(screen.getByRole("menuitem", { name: /Ben Whitfield/ }));
+
+    expect(
+      await screen.findByRole("button", { name: "Assigned to Ben Whitfield. Reassign" }),
+    ).toBeInTheDocument();
+    release(null);
+  });
+
+  it("puts the old assignee back when the server refuses", async () => {
+    show(makeTask({ id: 3, title: "Record the Loom" }));
+    server.use(
+      http.patch("/api/tasks/3/", () => new HttpResponse(null, { status: 403 })),
+    );
+    renderWithProviders(<TasksPage />);
+
+    await userEvent.click(await screen.findByRole("button", { name: /Assign someone/ }));
+    await userEvent.click(screen.getByRole("menuitem", { name: /Ben Whitfield/ }));
+
+    expect(
+      await screen.findByText(/only change tasks you created or were assigned/),
+    ).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /Unassigned. Assign someone/ })).toBeInTheDocument(),
+    );
+  });
+});
+
 describe("TasksPage permissions", () => {
   it("hides Edit and Delete on a task the user may not change", async () => {
     show(makeTask({ id: 1, title: "Someone else's", can_edit: false, can_delete: false }));

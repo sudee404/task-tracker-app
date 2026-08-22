@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react";
 
-import type { Task } from "../api/types";
+import type { Task, User } from "../api/types";
 import { TaskCard } from "./TaskCard";
 
 interface Props {
@@ -19,6 +19,8 @@ interface Props {
   onDelete: (task: Task) => void;
   onDragStart: (task: Task) => void;
   onDragEnd: () => void;
+  onAssign: (task: Task, member: User | null) => void;
+  team: User[];
   action?: ReactNode;
 }
 
