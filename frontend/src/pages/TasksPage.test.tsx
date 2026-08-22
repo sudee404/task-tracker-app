@@ -40,6 +40,17 @@ describe("TasksPage board", () => {
     expect(await screen.findByText(/1 overdue/)).toBeInTheDocument();
   });
 
+  it("does not count work due today as overdue", async () => {
+    const today = new Date().toISOString().slice(0, 10);
+    show(makeTask({ id: 1, title: "Due today", due_date: today }));
+    renderWithProviders(<TasksPage />);
+
+    expect(await screen.findByText(/1 outstanding/)).toBeInTheDocument();
+    expect(screen.queryByText(/overdue/)).not.toBeInTheDocument();
+    // The card agrees with the header.
+    expect(screen.getByText("Today")).toBeInTheDocument();
+  });
+
   it("shows an empty state per column rather than a blank panel", async () => {
     show();
     renderWithProviders(<TasksPage />);

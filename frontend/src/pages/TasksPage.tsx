@@ -18,6 +18,7 @@ import { Modal } from "../components/Modal";
 import { TaskForm } from "../components/TaskForm";
 import { ThemeToggle } from "../components/ThemeToggle";
 import { useDebounced } from "../hooks/useDebounced";
+import { isOverdue } from "../lib/dates";
 
 /** Which task the form is editing, or "new" when adding. */
 type Editing = Task | "new" | null;
@@ -50,9 +51,7 @@ export function TasksPage() {
 
   const todoTasks = todo.data?.results ?? [];
   const doneTasks = done.data?.results ?? [];
-  const overdue = todoTasks.filter(
-    (task) => task.due_date && new Date(`${task.due_date}T00:00:00`) < new Date(),
-  ).length;
+  const overdue = todoTasks.filter((task) => isOverdue(task.due_date, task.is_complete)).length;
 
   function handleSubmit(input: TaskInput) {
     return editing === "new"

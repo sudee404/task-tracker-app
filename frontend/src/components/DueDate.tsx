@@ -1,12 +1,12 @@
+import { daysUntil, isOverdue } from "../lib/dates";
+
 /** Renders a due date, flagging anything overdue that is not yet finished. */
 export function DueDate({ date, isComplete }: { date: string | null; isComplete: boolean }) {
   if (!date) return null;
 
+  const days = daysUntil(date);
+  const overdue = isOverdue(date, isComplete);
   const due = new Date(`${date}T00:00:00`);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const days = Math.round((due.getTime() - today.getTime()) / 86_400_000);
-  const overdue = !isComplete && days < 0;
 
   const label =
     days === 0
@@ -16,7 +16,7 @@ export function DueDate({ date, isComplete }: { date: string | null; isComplete:
         : due.toLocaleDateString("en-GB", {
             day: "numeric",
             month: "short",
-            year: due.getFullYear() === today.getFullYear() ? undefined : "numeric",
+            year: due.getFullYear() === new Date().getFullYear() ? undefined : "numeric",
           });
 
   return (
